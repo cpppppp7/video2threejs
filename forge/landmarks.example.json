@@ -1,0 +1,13 @@
+{
+  "aspect": 1.778, "y": 1.05,
+  "search": { "x": [0, 8], "z": [0, 8] },
+  "landmarks": [
+    { "name": "bookcase",   "x": -3.0, "z": 3.0,  "frac": 0.08 },
+    { "name": "window",     "x": -3.0, "z": 0.6,  "frac": 0.25 },
+    { "name": "monitor",    "x": -3.0, "z": -2.0, "frac": 0.47 },
+    { "name": "corner",     "x": -3.0, "z": -3.0, "frac": 0.55 },
+    { "name": "door",       "x": -1.9, "z": -3.0, "frac": 0.60 },
+    { "name": "lamp",       "x": -0.85,"z": -3.0, "frac": 0.66 },
+    { "name": "nightstand", "x": 3.6,  "z": -3.0, "frac": 0.97 }
+  ]
+}
