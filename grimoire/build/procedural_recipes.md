@@ -1,22 +1,22 @@
-# 物件配方（逐个推到 8 分）
+# Object recipes (push each one to 8/10)
 
-每个物件：先写"参考特征清单"，做完 `?view=` 特写截图比对。
+Per object: write the reference-feature list first, then compare a `?view=` close-up screenshot.
 
-| 物件 | 配方 |
+| Object | Recipe |
 |---|---|
-| 墙/地板/天花板 | box 段 + Plane；顶点色地板可做区域色 |
-| 窗 | 洞 + 白框 box + 竖棂 + 卷帘盒；无横棂时别加 |
-| 书桌 | 长 box 面板 + 两端腿；显示器(框+CanvasTexture 屏)+机箱(白 box + 蓝环)+笔筒(圆柱+细笔)+纸+小盒 |
-| 书架 | **开口结构**（背板+侧板+层板+顶板），书用 InstancedMesh + setColorAt，高矮随机；顶上平放书用普通 box（旋转实例会出怪） |
-| 抽屉柜 | 白 box + 3×3 彩色面板 + 白把手 |
-| 床架 | 白 box 平台 + 薄床垫 RoundedBox |
-| 被子 | `duvetGeometry`: 80×70 平面搭在床垫上——内部多山丘噪声（值噪声×0.5，边缘衰减）+ 边缘圆弧卷边(R 0.17) + 短垂落 + 角部两轴内收；DoubleSide sheen 材质 |
-| 枕头 | RoundedBox 厚 0.5 + 噪声鼓包 + 中央凹陷，`rotation.x=-0.45` 斜靠床头板，CanvasTexture 蓝泼墨花纹 |
-| 地毯 | CircleGeometry + CanvasTexture（蓝底白点白边），平放，不做凸边 |
-| 坐垫/靠枕 | RoundedBox + 噪声 + sheen |
-| 落地灯 | 底盘 + 细杆 + 半圆 Torus 弧 + 短垂杆 + 发光球 |
-| 海报 | Plane + CanvasTexture（大字/蓝底）；数量、行列、位置按契约 |
-| 玩偶 | 球体组合（身/头/耳/臂）+ 色块脸 |
-| 猫 | RoundedBox 躯干、白八字脸/胸兜/手套爪、粉耳内、绿眼竖瞳、胡须、三节尾巴；`sit` 参数插值坐/站 |
+| Walls / floor / ceiling | box segments + planes; vertex colours on the floor for zones |
+| Window | hole + white frame boxes + one mullion + blind box; no horizontal bar unless the video has one |
+| Desk | long top box + legs; monitor (frame + CanvasTexture screen), PC tower (white box + blue rings), pen cups (cylinder + thin pens), paper, small boxes |
+| Bookcase | **open structure** (back + sides + shelves + top); books as InstancedMesh with `setColorAt` and random heights; books lying on top as plain boxes (rotated instances glitch) |
+| Drawer unit | white box + 3×3 coloured fronts + white handles |
+| Bed frame | white platform box + thin RoundedBox mattress |
+| Duvet | `duvetGeometry`: an 80×70 plane laid over the mattress — rolling hills inside (value noise ×0.5, fading toward the edges) + a rounded roll over the edge (R 0.17) + a short hang + both axes pulled in at the corners; DoubleSide sheen material |
+| Pillows | RoundedBox 0.5 thick + noise puff + central dent, `rotation.x = -0.45` leaning on the headboard, CanvasTexture blue-splash pattern |
+| Rug | CircleGeometry + CanvasTexture (blue, white dots, white edge), flat, no raised border |
+| Poufs / floor pillow | RoundedBox + noise + sheen |
+| Arc lamp | base disc + thin pole + half-torus arc + short drop + glowing sphere |
+| Posters | plane + CanvasTexture (big letters / blue photo); count, rows and placement per contract |
+| Plush toy | spheres (body / head / ears / arms) + a colour-patch face |
+| Cat | RoundedBox trunk, white blaze / bib / gloves, pink inner ears, green slit-pupil eyes, whiskers, three-joint tail; a `sit` parameter blends sit/stand |
 
-原则：先大形、再比例、最后配件；任何"贴图代替几何"的偷懒（如贴图做被子）都会被看穿。
+Principle: mass first, then proportions, then accessories. Any "texture instead of geometry" shortcut (a textured square for a duvet) gets spotted immediately.

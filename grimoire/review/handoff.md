@@ -1,4 +1,4 @@
-# 交付
-- 部署：**在项目根目录**执行 `vercel --prod`（在临时目录执行会新建垃圾项目——本案发生过，已删除）。
-- 写项目 `CLAUDE.md`：坐标系、相机、色板、光参数、物件事实、用户"不要"清单、调试参数。
-- 记忆：把用户的工作方式偏好（实时预览、1:1、并排验证）写成 feedback memory。
+# Handoff
+- Deploy: run `vercel --prod` **from the project root** (running it in a scratch directory creates a junk project — it happened once and had to be deleted).
+- Write the project `CLAUDE.md`: coordinate frame, camera, palette, light parameters, object facts, the user's "no" list, debug parameters.
+- Memory: record the user's working preferences (live preview, 1:1, side-by-side verification) as feedback.

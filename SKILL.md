@@ -1,47 +1,128 @@
 ---
 name: video2threejs
-description: Rebuild a room/scene from a reference VIDEO (AI-generated or filmed) as a code-only procedural Three.js diorama, 1:1 in layout, color, light, objects, characters and their motion timeline. Use when the user shares a video/tweet and asks to "复刻/还原/1:1 rebuild" it in three.js, or asks how to model a specific object (bedding, hair, lamps, rugs) procedurally. Built around live preview, multi-frame analysis, perspective solving, detail sculpting, research-when-unsure and screenshot-verified iteration.
+description: Rebuild a room/scene from a reference VIDEO (AI-generated or filmed) as a code-only procedural Three.js diorama, 1:1 in layout, color, light, objects, characters and their motion timeline. Use when the user shares a video/tweet and asks to rebuild/replicate it in three.js, or asks how to model a specific object (bedding, hair, lamps, rugs) procedurally. Built around live preview, multi-frame analysis, perspective solving, detail sculpting, research-when-unsure and screenshot-verified iteration.
 ---
 
 # video2threejs — Video → procedural Three.js scene
 
-把一段参考视频（Seedance/Sora/Veo 生成或实拍）还原成**纯代码、零外部模型**的 Three.js 立体场景，目标是 1:1：机位、每件物品的位置与尺寸、颜色、光、人物外形与**动作时间线**。
+Rebuild a reference video (Seedance / Sora / Veo output, or footage) as a **code-only, zero-asset** Three.js scene. The bar is 1:1: camera, every object's position and proportions, palette, light, character look, and the **motion timeline** the characters follow.
 
-这是"reconstruction-by-code"，不是视频重建、NeRF 或下载资产包。参考同门的 [img2threejs](https://github.com/img2threejs/img2threejs)（单物件/角色）；本 skill 负责"整间房 + 多人物 + 时间线"。
+Reconstruction-by-code — not NeRF, not video-to-mesh, not downloaded asset packs. Sister skill of [img2threejs](https://github.com/img2threejs/img2threejs) (one object or character from one image); this skill covers a whole room with people and time.
 
-本文件是常驻路由：只放顺序和硬规则，每条规则指向 `grimoire/` 里的契约，到该阶段再读。
+This file is the always-loaded router. It holds the order of operations, the hard rules with their rationale, the definition of done, and the anti-patterns. The full contract for each stage lives in the `grimoire/` file the rule names — read it when you reach that stage, not before.
 
-## 硬规则（用户血泪换来的，违反即返工）
+## When to use
 
-1. **边捏边看（live preview）**：任何建模开始前先跑 `vite` dev server 并把页面 `open` 给用户；按 STAGE 增量写文件，每个 STAGE 热更新可见；右下角放阶段标签。→ `grimoire/build/live_preview.md`
-2. **先分析视频，再动手；分析要多角度**：抽帧 ≥8 张覆盖全时长；对"哪面墙/哪个角落"这种空间事实，画网格图逐格读，必要时请用户在截图上标红线。一张帧看不清的，换一帧。→ `grimoire/intake/multi_view_analysis.md`
-3. **空间先于物件**：先确定墙面/墙角/相机，再摆东西。相机不靠手感，用物件在画面里的横坐标反解（`forge/solve_camera.py`）。→ `grimoire/space/perspective_solving.md`
-4. **细节雕刻按物件逐个推进到 8 分**：每个物件有"参考特征清单"，做完用特写机位截图比对，再进下一个。豆腐块/乐高感 = 不合格。→ `grimoire/build/procedural_recipes.md`
-5. **不知道怎么做就去调研**：搜 three.js 官方示例/论坛/同门 skill（如 img2threejs 的头发指南），把结论写进 `grimoire/research/`，不要瞎试。→ `grimoire/research/when_unsure.md`
-6. **每次改动都截图验证**（headless Chrome，GPU 路径，几秒一张），和参考帧 `hstack` 并排；光的问题用"纯直射光诊断图"定位而不是猜。→ `grimoire/review/verification.md`
-7. **颜色取自视频像素**，不要凭印象；`forge/sample_colors.sh`。
-8. **用户说"不要"的东西记进 `grimoire/feedback/user_signals.md`，永久生效**（如：不要漂浮粒子、不要手画光斑、不要丝状发绺/马尾、不要乐高床品）。
-9. **动作必须像人**：躺/趴/侧躺/坐用统一的欧拉序与关节约定，并逐幕截图核对；上床下床要绕行不穿模。→ `grimoire/build/characters.md`
-10. 结束前做**自我 review 表**（逐物件打分 + 差距清单），交给用户决定下一批。→ `grimoire/review/self_review.md`
+- The user shares a video or a tweet with a video and asks to rebuild / replicate / "make this in three.js".
+- The user asks how to model a specific soft or organic object procedurally (a duvet, pillows, a plush toy, anime hair, a cat).
+- A room or interior needs to be reconstructed 1:1 from footage for a game, a diorama, an interactive homage.
 
-## 流程（顺序执行）
+Not for: a single hero object from a single image (use img2threejs), or projects where downloading GLB assets is acceptable.
 
-| 阶段 | 做什么 | 读 |
-|---|---|---|
-| 0 | 拿到视频：抓推文/下载 mp4（`forge/extract_frames.sh`）| `grimoire/intake/frame_extraction.md` |
-| 1 | 多角度分析：布局、物件清单、色板、人物、动作时间线 | `grimoire/intake/multi_view_analysis.md` |
-| 2 | 空间：墙面/墙角判定 → 坐标系 → 相机反解 → 布局契约 | `grimoire/space/*` |
-| 3 | 起手：脚手架 + dev server + 分 STAGE 骨架（`templates/room.template.js`）| `grimoire/build/live_preview.md` |
-| 4 | 光：实体墙 + 真实窗洞 + 只盖室内的屋顶 + 梯度底为 0 + 夕阳参数 | `grimoire/build/lighting.md` |
-| 5 | 物件逐个雕刻（配方库）| `grimoire/build/procedural_recipes.md` |
-| 6 | 人物与动作时间线 | `grimoire/build/characters.md`, `grimoire/build/motion_timeline.md` |
-| 7 | 开场运镜 + 自由轨道 + 机位读取/持久化 | `grimoire/build/camera_ux.md` |
-| 8 | 验证与自我 review，循环 | `grimoire/review/*` |
-| 9 | 部署（从项目根目录！）+ 写项目 CLAUDE.md | `grimoire/review/handoff.md` |
+## Required inputs
 
-## 安装
+- The video (mp4 URL / tweet URL / file). If it is a tweet, fetch the media variants and download the 720p mp4.
+- The user's tolerance: "1:1" (default for this skill) or "in the spirit of".
+- A place to run a dev server that the user can open in a browser.
+
+## Hard rules
+
+Each rule below was paid for with a rework in the Blue Room case study. They are not stylistic preferences.
+
+### 1. Live preview while sculpting
+Start the dev server and `open` the page for the user **before** modelling anything. Write the scene in stages that hot-reload (walls → furniture → light → characters → motion → intro camera). Put a stage label in a page corner; route `window.onerror` into it so runtime errors are visible on the page.
+*Why:* feedback is cheapest at the moment the wrong wall appears, not after the whole room is furnished around it.
+→ `grimoire/build/live_preview.md`
+
+### 2. Analyse the video first, from several angles
+Extract at least 8 frames across the whole clip. For spatial facts (which wall, which corner, what sits on what) read a gridded frame cell by cell; confirm every fact in a second frame; if the perspective still will not resolve, ask the user to draw the corner and floor lines on a screenshot. Produce the spatial fact sheet, the object inventory, the palette, the character cards and the motion scene table **before** writing code.
+*Why:* three confident rebuilds put the window in the wrong place; one red-pen sketch fixed it.
+→ `grimoire/intake/multi_view_analysis.md`, `grimoire/intake/frame_extraction.md`
+
+### 3. Space before objects; solve the camera
+Decide the visible walls and the corner, set the coordinate frame (left wall `x = LW`, right wall `z = RW`), then **solve** the camera from landmark fractions with `forge/solve_camera.py`. Only then place furniture.
+*Why:* a camera placed by feel makes every later comparison lie.
+→ `grimoire/space/perspective_solving.md`
+
+### 4. Keep a written layout contract
+One line per object: wall, position, size, relationship, reference frame. Every user correction edits the contract first, then the code. The contract is the single source of truth for positions used by furniture, poses and the camera solver.
+→ `grimoire/space/layout_contract.md`
+
+### 5. Colours come from pixels
+Sample lit and shaded patches of each object on the gridded frame; choose base colours between them, leaning bright. Never type a colour from memory.
+→ `grimoire/intake/frame_extraction.md`
+
+### 6. Real light, diagnosed, never painted
+Solid walls with a real window opening; a roof that covers exactly the room interior; a toon ramp whose bottom step is zero; one warm sun with a shadow camera that covers the room. Never fake light with painted floor patches, volumetric planes or floating particles. Diagnose with a direct-sun-only render (`?diag=sun`): walls and ceiling must be black, patches must land where geometry says.
+→ `grimoire/build/lighting.md`
+
+### 7. Sculpt object by object to 8/10
+Before building an object, list its reference features (shape, position, colour, accessories). After building, screenshot it from a close-up camera and score it. Do not move on below 8. Geometry over texture: a duvet is a draped sheet, a bookcase is open with real books, a pillow is thick and leans.
+→ `grimoire/build/procedural_recipes.md`
+
+### 8. Research when unsure
+If a construction is unknown (cloth, hair, a lamp arc), search three.js examples, the forum and sibling skills, list up to three approaches, pick the most controllable, cite the source, and record the finding in `grimoire/research/when_unsure.md`. Verify maths with node (Euler order, geometry φ origins) rather than reasoning about it.
+→ `grimoire/research/when_unsure.md`
+
+### 9. Motion must look human
+Root Euler order `YZX`; thigh negative = forward, calf positive = folds back; on the back `rx=-π/2`, prone adds `rz=π`, side adds `rz=±π/2`. Waypoints (`via`) route characters around furniture. Sitting and lying heights are measured from the duvet top. Log joints and bounding boxes for any character that "vanishes". Screenshot every scene.
+→ `grimoire/build/characters.md`, `grimoire/build/motion_timeline.md`
+
+### 10. Screenshot everything, then self-review
+Headless Chrome on the GPU path (seconds), viewport in the video's aspect ratio, `hstack` against the reference frame. Before handing off, write a scored self-review table with a gap list and let the user choose the next batch. "Improved" is not "done".
+→ `grimoire/review/verification.md`, `grimoire/review/self_review.md`
+
+### 11. The user's "no" list is permanent
+Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is never reintroduced (floating particles, painted light, Lego bedding, stringy hair, dog-like legs, light on walls …).
+→ `grimoire/feedback/user_signals.md`
+
+### 12. Deploy from the project root
+`vercel --prod` (or any deploy) only from the project directory. Write the project `CLAUDE.md` with the coordinate frame, camera, palette, light, object facts, debug parameters and the user's lists.
+→ `grimoire/review/handoff.md`
+
+## Pipeline
+
+| Stage | Do | Output | Read |
+|---|---|---|---|
+| 0 | Fetch the video, extract frames and a grid image | `frame_*.jpg`, `grid_01.jpg` | `intake/frame_extraction.md` |
+| 1 | Multi-angle analysis | fact sheet, inventory, palette, character cards, scene table | `intake/multi_view_analysis.md` |
+| 2 | Space: walls → frame → camera solve → layout contract | `landmarks.json`, `CAM/LOOK/fov`, contract | `space/*` |
+| 3 | Scaffold with live preview; staged skeleton from the template | running page the user watches | `build/live_preview.md` |
+| 4 | Light | window hole, roof, ramp, sun; `?diag=sun` clean | `build/lighting.md` |
+| 5 | Objects one by one | per-object close-ups ≥8/10 | `build/procedural_recipes.md` |
+| 6 | Characters, then the motion timeline | per-scene screenshots | `build/characters.md`, `build/motion_timeline.md` |
+| 7 | Camera UX: orbit, copy/persist, intro | `C`/`R`, intro shots verified | `build/camera_ux.md` |
+| 8 | Verify and self-review; loop with the user | side-by-sides, scored table | `review/*` |
+| 9 | Deploy and hand off | URL, project CLAUDE.md | `review/handoff.md` |
+
+## Definition of done
+
+- Side-by-side with the reference frame: walls, corner, window, bed, desk, posters, rug in the same places at the same proportions; camera solve error ≤ ~3 % of frame width.
+- `?diag=sun`: only floor / intended surfaces lit; walls and ceiling black.
+- Every object on the inventory built and scored ≥ 8; no object represented by a texture instead of geometry.
+- Every scene of the motion table screenshot-verified: human poses, no clipping, correct heights.
+- Self-review table delivered; project `CLAUDE.md` written; deployment URL returned.
+
+## Anti-patterns (seen, banned)
+
+- Building furniture before the walls and camera are settled.
+- Placing the camera by feel; comparing a square screenshot with a 16:9 frame.
+- A roof slab that extends outside the window (blocks the sun, hides the sky).
+- A toon ramp with a non-zero floor under a strong sun ("the roof leaks light").
+- Painted light patches, additive light planes, dust particles.
+- RoundedBox slabs for bedding; textured squares for a duvet; white strips on top of the duvet.
+- Ribbon / strand hair on distant characters; ponytails; full-sphere hair caps that swallow the face.
+- Guessing Euler behaviour; XYZ order for lying poses.
+- Screenshots through a shared browser; software-rasterised headless renders.
+- Running the deploy command from a scratch directory.
+
+## Debug parameters the template provides
+
+`?t=<s>` jump the timeline · `?view=g1|g2|cat|desk|bed|rug` preset close-ups · `?view=free&cam=x,y,z&look=x,y,z` any camera · `?diag=sun` direct sun only · `?diag=pose` joint + bounding-box log · `?intro=1&it=<s>` force / seek the intro. The page clock runs ≈2.5 s ahead of `?t` in headless renders.
+
+## Install
 
 ```bash
-git clone <this repo> ~/video2threejs
+git clone https://github.com/cpppppp7/video2threejs ~/video2threejs
 ln -s ~/video2threejs ~/.claude/skills/video2threejs
 ```

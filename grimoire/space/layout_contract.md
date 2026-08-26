@@ -1,17 +1,17 @@
-# 布局契约（摆任何东西前写好）
+# Layout contract (write it before placing anything)
 
-每件物品一行：`名称 | 墙 | 位置(x,z) | 尺寸 | 相对关系 | 参考帧`
+One line per object: `name | wall | position (x,z) | size | relationship | reference frame`
 
-示例（Blue Room）：
-- 窗 | 左墙 | z -0.95..2.15, y 1.05..3.05 | 一根竖棂、无横棂、上有卷帘盒 | 中段，左边不贴墙角 | f01
-- 书桌 | 左墙 | z -2.6..2.15 | 到窗左缘为止 | 显示器靠墙角、机箱在旁 | f01
-- 小书架 | 桌面上 | z 0.75..2.1 | 高 0.95（半窗高） | 在窗左半玻璃正下方，顶上平放书 | f03
-- 抽屉柜 | 桌下 | z 0.8..2.1 | 3×3 薰衣草蓝面 | 在小书架下 | f01
-- 门 | 右墙 | x -2.45..-1.45 | | 紧挨墙角右侧 | f02
-- 床 | 右墙 | x -1.33..0.63, z -3..-0.65 | 床头靠墙、床身垂直 | 紧挨门 | f04
-- 四幅画 | 右墙 | x -0.88/0.18, y 2.9/1.85 | 2×2 | 床正上方，顶行贴天花板 | 标注图
-- 床头柜 | 右墙 | x 1.0 | 上有蓝色玩具车 | 床头旁；前面地上一摞书 | f01
-- 落地灯 | 床头角落 | | 弧向右、灯球悬在枕头上方 | | f01
-- 地毯 | 地面 | (-1.2,1.6) r1.6 椭圆 | 蓝底白点、平边 | 前左 | f01
+Example (Blue Room):
+- Window | left wall | z -0.95..2.15, y 1.05..3.05 | one vertical mullion, no horizontal bar, roller-blind box above | mid-wall, not in the corner | f01
+- Desk | left wall | z -2.6..2.15 | ends at the window's left edge | monitor near the corner, PC tower beside it | f01
+- Small bookcase | on the desk | z 0.75..2.1 | height 0.95 (half the window) | directly under the window's left pane, books lying on top | f03
+- Drawer unit | under the desk | z 0.8..2.1 | 3×3 lavender fronts | below the bookcase | f01
+- Door | right wall | x -2.45..-1.45 | | right beside the corner | f02
+- Bed | right wall | x -1.33..0.63, z -3..-0.65 | head against the wall, body perpendicular | right beside the door | f04
+- Four posters | right wall | x -0.88 / 0.18, y 2.9 / 1.85 | 2×2 | directly above the bed head, top row touching the ceiling | annotated frame
+- Nightstand | right wall | x 1.0 | blue toy car on top | beside the bed head; a book stack on the floor in front | f01
+- Arc lamp | bed-head corner | | arc bends right, lantern hangs over the pillows | | f01
+- Rug | floor | (-1.2, 1.6) r 1.6 ellipse | blue with white dots, flat edge | front-left | f01
 
-规则：契约变更（用户纠正）先改这里，再改代码。
+Rule: when the user corrects something, change this file first, then the code.

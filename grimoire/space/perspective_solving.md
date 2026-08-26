@@ -1,16 +1,16 @@
-# 空间与相机反解
+# Space and camera solving
 
-## 坐标系约定
-- 两面可见墙：左墙 `x = LW`，右墙 `z = RW`，墙角 `(LW, RW)`；房间向 +x、+z 开放（相机在那侧）。
-- y 向上；地板 y=0；天花板高 3.4；人物身高约 1.55；床面 0.5–0.6。
+## Coordinate conventions
+- Two visible walls: left wall `x = LW`, right wall `z = RW`, corner at `(LW, RW)`; the room is open toward +x and +z (camera side).
+- y up; floor y=0; ceiling 3.4; character height ≈1.55; mattress top 0.5–0.6.
 
-## 相机反解（不要手感摆）
-1. 在参考帧上读若干地标的**横向百分比**（书柜 0–16%、窗 16–34%、显示器 40–55%、墙角 55%、门 57–63%、床头柜 95–100%…）。
-2. 给每个地标世界坐标（来自布局契约）。
-3. `python3 forge/solve_camera.py landmarks.json` 网格搜索相机 (x,z)、朝向、水平视场，最小化百分比误差；输出 CAM/LOOK/fov。
-4. 高度与俯仰：地平线在画面的位置 ≈ 相机高度；天花板线是否入画决定俯仰。
-5. 用户能用 OrbitControls 调出更好的机位时，让他按 `C` 复制坐标发回，直接固化。
+## Solving the camera (never by feel)
+1. Read the **horizontal fraction** of several landmarks in the reference frame (bookcase 0–16 %, window 16–34 %, monitor 40–55 %, corner 55 %, door 57–63 %, nightstand 95–100 % …).
+2. Give each landmark a world position from the layout contract.
+3. `python3 forge/solve_camera.py landmarks.json` grid-searches camera (x, z), heading and horizontal fov to minimise the fraction error; it prints CAM / LOOK / three.js fov.
+4. Height and pitch: the horizon's height in the frame ≈ camera height; whether the ceiling line is in frame sets the pitch.
+5. When the user finds a better view with OrbitControls, have them press `C` to copy the camera and paste it back; hard-code it.
 
-## 判读规则
-- 左墙与视线夹角小 → "看起来正对"；两墙夹角接近 → 斜看墙角。
-- 画面宽高比按视频（16:9）设置截图视口，否则比对没意义。
+## Reading rules
+- Small angle between the left wall and the view direction → "looks head-on"; similar angles for both walls → "looking into the corner".
+- Screenshot viewport must use the video's aspect ratio (16:9), otherwise comparisons are meaningless.

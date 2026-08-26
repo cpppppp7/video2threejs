@@ -1,6 +1,6 @@
-# 相机体验
+# Camera experience
 
-- OrbitControls：拖拽旋转、滚轮缩放、右键平移；`minDistance/maxDistance/maxPolarAngle` 限制。
-- 初始机位来自 `solve_camera.py`；用户可按 `C` 复制当前 `CAM/LOOK/fov` 发回固化；`R` 重置；localStorage 记住用户视角。
-- 开场运镜：屋内高角全景（4s，缓慢推近）→ 局部特写 1（书桌角）→ 局部特写 2（床角）→ 2.8s 平滑落到初始机位并交还控制；点击/按键跳过；带 `view/diag` 参数时不播。
-- 全景机位必须在屋顶之下、墙内；否则拍到天花板背面。
+- OrbitControls: drag to rotate, wheel to zoom, right-drag to pan; clamp with `minDistance / maxDistance / maxPolarAngle`.
+- The initial camera comes from `solve_camera.py`; the user can press `C` to copy the current `CAM / LOOK / fov` and send it back; `R` resets; localStorage remembers the user's view.
+- Intro: overview from a high inside corner (4 s, slow dolly in) → detail 1 (desk corner) → detail 2 (bed) → 2.8 s blend into the initial camera, then hand control back; click/key skips; not played when `view` / `diag` params are present.
+- The overview camera must stay under the roof and inside the walls, or it films the back of the ceiling.

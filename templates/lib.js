@@ -1,4 +1,4 @@
-// ============ 常量 / 数学 / 地形 / 共享材质 ============
+// ============ constants / maths / terrain / shared materials ============
 import * as THREE from 'three';
 
 export const SPIRAL = { turns: 3.5, R0: 128, R1: 10, theta0: Math.PI / 2 };
@@ -11,7 +11,7 @@ export const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const smoothstep = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
-// ---- 山体轮廓：中心高 58，半径 150 处归零 ----
+// ---- mountain profile: height 58 at the centre, zero at radius 150 ----
 export function mountainH(r) {
   const u = clamp(r / MOUNTAIN_R, 0, 1);
   const s = 1 - u * u * (3 - 2 * u);
@@ -27,7 +27,7 @@ export const vn = vnoise;
 export const noise = (x, z) =>
   (vnoise(x * 0.045, z * 0.045) - 0.5) * 3.2 + (vnoise(x * 0.13 + 7.3, z * 0.13 + 2.9) - 0.5) * 1.1;
 
-// ---- 盘山螺旋参道 ----
+// ---- spiral path up the mountain ----
 export function spiralPoint(t) {
   const th = SPIRAL.theta0 + t * SPIRAL.turns * Math.PI * 2;
   const r = lerp(SPIRAL.R0, SPIRAL.R1, t);
@@ -37,7 +37,7 @@ export function spiralTangent(t) {
   const a = spiralPoint(Math.max(0, t - 0.001)), b = spiralPoint(Math.min(1, t + 0.001));
   return b.sub(a).normalize();
 }
-// 任意点到螺旋参道的（径向）距离与参数 t
+// radial distance from any point to the spiral path, and the path parameter t
 export function pathInfo(x, z) {
   const r = Math.hypot(x, z), phi = Math.atan2(z, x);
   const TH = SPIRAL.turns * Math.PI * 2;
@@ -51,7 +51,7 @@ export function pathInfo(x, z) {
   return { d: bd, t: bt };
 }
 export const summitY = mountainH(SPIRAL.R1);
-// 最终地形：山体 + 噪声，参道与山顶平台处被“压平”
+// final terrain: mountain + noise, flattened along the path and on the summit plateau
 export function sampleTerrain(x, z) {
   const r = Math.hypot(x, z);
   let h = mountainH(r);
@@ -66,7 +66,7 @@ export function sampleTerrain(x, z) {
 }
 export const groundY = (x, z) => sampleTerrain(x, z).h;
 
-// ---- 卡通渲染：3 阶 gradientMap ----
+// ---- toon shading: 3-step gradientMap ----
 export function makeGradientMap() {
   const data = new Uint8Array([96, 168, 255]);
   const tex = new THREE.DataTexture(data, 3, 1, THREE.RedFormat);
@@ -100,7 +100,7 @@ export function petalTexture(size = 48, deep = false) {
   const g = c.getContext('2d');
   const u = size / 48;
   g.translate(size / 2, size / 2 + 3 * u); g.rotate(0.5);
-  // 樱花瓣：顶端带缺口的泪滴形
+  // cherry petal: teardrop with a notch at the tip
   const grad = g.createLinearGradient(0, 14 * u, 0, -14 * u);
   grad.addColorStop(0, deep ? '#ff9ec9' : '#ffc9de');
   grad.addColorStop(1, deep ? '#ffd5e6' : '#fff3f8');
@@ -109,7 +109,7 @@ export function petalTexture(size = 48, deep = false) {
   g.beginPath();
   g.moveTo(0, 14 * u);
   g.bezierCurveTo(11 * u, 8 * u, 11 * u, -8 * u, 4 * u, -12 * u);
-  g.lineTo(0, -8 * u);          // 顶端缺口
+  g.lineTo(0, -8 * u);          // notch at the tip
   g.lineTo(-4 * u, -12 * u);
   g.bezierCurveTo(-11 * u, -8 * u, -11 * u, 8 * u, 0, 14 * u);
   g.fill();

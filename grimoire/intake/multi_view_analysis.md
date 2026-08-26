@@ -1,20 +1,20 @@
-# 多角度视频分析（动手前必做）
+# Multi-angle video analysis (before touching code)
 
-## 输出物
-1. **空间事实表**：镜头看向哪里（正对一面墙？还是墙角？）、每面墙上有什么、墙角在画面的横向百分比。
-2. **物件清单**（每件一行）：名称 / 靠哪面墙 / 左右邻居 / 高度相对参照（如"只有半个窗高"）/ 颜色 / 细节配件。
-3. **色板**：地板受光与阴影、墙、主色（如海蓝）、次色、人物服装/发/肤。
-4. **人物卡**：发型、发色、上衣、下装、印花、鞋。
-5. **动作幕表**：按时间列每个人物/动物的"地点 + 姿态"（坐椅/躺毯/伸懒腰/跪地逗猫/坐床沿玩手机/趴床踢腿…）。
+## Deliverables
+1. **Spatial fact sheet**: what the camera looks at (a wall head-on? into a corner?), what sits on each wall, where the corner falls as a fraction of frame width.
+2. **Object inventory** (one line each): name / wall / left-right neighbours / height relative to a reference ("half the window's height") / colour / accessories.
+3. **Palette**: floor lit and shaded, walls, main colour (sea blue here), secondary colours, character clothes / hair / skin.
+4. **Character cards**: hairstyle, hair colour, top, bottom, print, shoes.
+5. **Motion scene table**: per timestamp, each person's and animal's "place + pose" (chair / rug / stretching / kneeling with the cat / bed edge with phone / prone kicking …).
 
-## 方法
-- 同一空间事实至少看 2 帧；看不清换帧、放大、做网格图。
-- 透视线：找竖直墙角线与两侧地脚线，判断相机是"正对"还是"斜看墙角"。不确定就**请用户在截图上画红线**——这一步值得打断。
-- 物件相对关系用"紧挨/正上方/前面地上/旁边"这类词写清，后面布局契约直接引用。
-- 用户说的每一句"应该是…"都当作事实表的修订，立即回写。
+## Method
+- Confirm every spatial fact in at least two frames; switch frames, zoom, or use the grid image when unclear.
+- Perspective lines: find the vertical corner line and the two floor lines to decide "head-on" vs "into the corner". If still unsure, **ask the user to draw red lines on a screenshot** — worth the interruption.
+- Write relationships in words the layout contract can reuse: "right beside", "directly above", "on the floor in front of", "next to".
+- Every user sentence of the form "it should be …" is a fact-sheet revision; write it back immediately.
 
-## 常见误读（本案踩过）
-- 把窗户放到墙角（实际在墙中段，左边有书柜）。
-- 把床沿墙平放（实际床头靠墙、床身垂直伸进房间、紧挨着门）。
-- 把海报放右墙远端（实际在床正上方 2×2 四幅）。
-- 书架以为落地（实际立在桌面上、只有半窗高，桌下是抽屉）。
+## Misreads that happened (Blue Room)
+- Window put in the corner (it is mid-wall with a bookcase to its left).
+- Bed laid along the wall (its head is against the wall, body perpendicular, right beside the door).
+- Posters placed far along the right wall (they are a 2×2 set directly above the bed).
+- Bookcase assumed standing on the floor (it stands on the desk, half the window's height, drawers below).

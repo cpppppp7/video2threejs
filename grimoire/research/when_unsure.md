@@ -1,12 +1,12 @@
-# 不知道怎么做时
+# When you do not know how
 
-1. 先搜：three.js 官方 examples（cloth、instancing、lathe）、discourse.threejs.org、同门 skill（img2threejs 的 `grimoire/character/*` 头发/头部指南）。
-2. 把可行方案（≤3 个）写下来，选最可控的；记录来源。
-3. 用 node 直接验证数学（如欧拉序、几何 φ 起点），不要靠推理猜。
-4. 结论沉淀到本目录 `findings.md`。
+1. Search first: three.js official examples (cloth, instancing, lathe), discourse.threejs.org, sibling skills (img2threejs `grimoire/character/*` for hair and heads).
+2. Write down the viable approaches (≤3), pick the most controllable, cite the source.
+3. Verify the maths directly with node (Euler order, geometry φ origins) instead of reasoning about it.
+4. Record conclusions in `findings.md` in this directory.
 
-## findings.md（已沉淀）
-- 被子：cloth 粒子模拟 vs 高细分平面位移——后者可控，选它（见 procedural_recipes）。
-- 头发：img2threejs 的"锥形带状放样"适合单角色特写；房间场景里用户嫌"像鬼"，改 Lathe 头盔。
-- Euler：three.js 'YZX' = Ry·Rz·Rx，向量先做 Rx。
-- Sphere/Lathe φ 起点：-X / +Z。
+## findings.md (recorded)
+- Duvet: cloth particle simulation vs a high-resolution displaced plane — the plane is controllable; use it (see procedural_recipes).
+- Hair: img2threejs' tapered ribbon lofts suit single-character close-ups; in a room scene the user found them ghostly, so use the lathe helmet.
+- Euler: three.js 'YZX' = Ry·Rz·Rx; vectors are rotated by Rx first.
+- Sphere / Lathe φ origin: -X / +Z.

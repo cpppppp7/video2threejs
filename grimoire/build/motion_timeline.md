@@ -1,7 +1,7 @@
-# 动作时间线（从视频到幕表）
+# Motion timeline (from video to scene table)
 
-1. 抽帧后按时间写幕表：`t | 人物A 地点+姿态 | 人物B 地点+姿态 | 猫`。
-2. 每幕映射为 `PA[i] / PB[i] / PC[i]` 的 pose 参数；地点用布局契约里的坐标。
-3. 过渡：`k = smoothstep(0,1,phase)`，角度用最短弧插值；位置差大则走路；上床/离床经 `via`。
-4. 每幕加 overlay（挥手、蹦跳、踢腿、玩手机点头、猫尾巴），幅度要能被看到。
-5. 验证：`?t=幕起点+2` 逐幕截图；至少 3 个机位。
+1. After frame extraction, write the scene table by time: `t | person A place + pose | person B place + pose | cat`.
+2. Map every scene to `PA[i] / PB[i] / PC[i]` pose parameters; places come from the layout contract.
+3. Transitions: `k = smoothstep(0, 1, phase)`, angles interpolated along the shortest arc; large position changes walk; getting on/off the bed goes through `via`.
+4. Add per-scene overlays (waving, bouncing, kicking, phone nodding, cat tail) with amplitudes big enough to read.
+5. Verify: screenshot every scene at `?t = scene start + 2` from at least three cameras.

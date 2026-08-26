@@ -1,19 +1,19 @@
-# 光（真实窗光，不要假光斑）
+# Light (real window light, no painted patches)
 
-## 结构
-- 左墙 = 带**真实窗洞**的 4 段实体 box（castShadow），阳光只能穿洞进来，窗框/竖棂投出真实影子。
-- 屋顶 = 亮白 MeshBasicMaterial 平面 + 投影实心板（castShadow），**只覆盖房间内部**（LW..LW+9 × RW..RW+9）。伸到窗外会挡住射向窗的阳光并遮住蓝天。
-- 窗外：一块大天空渐变板（CanvasTexture）放在窗外 2.5m 处。
+## Structure
+- Left wall = four solid boxes around a **real window opening** (castShadow). Sunlight can only enter through the hole; the frame and mullion cast real shadows.
+- Roof = bright white MeshBasicMaterial plane + a shadow-casting solid slab, **covering only the room interior** (LW..LW+9 × RW..RW+9). A slab that extends past the window blocks the sun before it reaches the window and hides the sky.
+- Outdoors: a large sky-gradient plane (CanvasTexture) 2.5 m outside the window.
 
-## 材质
-- 卡通 `gradientMap` 用 `[0, 150, 255]`：最低档必须为 0，否则强太阳把背光面照亮 (最低档/255 × 强度)，看起来像屋顶漏光。
-- 布艺用 MeshPhysicalMaterial(sheen)，其余 toon。
+## Materials
+- Toon `gradientMap` = `[0, 150, 255]`: the bottom step must be 0, otherwise a strong sun lights every back-facing surface by (step/255 × intensity) and it reads as light leaking through the roof.
+- Fabrics use MeshPhysicalMaterial with sheen; everything else is toon.
 
-## 参数（夕阳）
-- Sun: 0xffc36e，强度 5.5，仰角 ~35°，方向按用户要求（本案：从窗斜向床头，光只落地面）。
-- Hemisphere 1.7，补光 0.6 无阴影，曝光 1.38。
-- 阴影贴图 3072，`shadow.camera` 范围要盖住整个房间（±16）。
+## Parameters (sunset)
+- Sun: 0xffc36e, intensity 5.5, elevation ≈35°, direction as the user asks (Blue Room: from the window slanting toward the bed head, landing on the floor only).
+- Hemisphere 1.7, fill 0.6 without shadows, exposure 1.38.
+- Shadow map 3072; the shadow camera must cover the whole room (±16).
 
-## 诊断
-- `?diag=sun`：关掉半球/补光只留太阳——看直射光落在哪；墙/天花板必须全黑。
-- 光斑落点几何：从窗高 y 以斜率 s 射出，落地 x = LW + y/s；桌子/书架会挡住窗下半截光线，属于物理事实。
+## Diagnostics
+- `?diag=sun` turns off hemisphere/fill and leaves the sun: see exactly where direct light lands; walls and ceiling must be black.
+- Patch geometry: a ray leaving the window at height y with slope s lands at x = LW + y/s. Desk and bookcase block the lower part of the window — that is physics, not a bug.

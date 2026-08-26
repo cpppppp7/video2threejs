@@ -1,16 +1,16 @@
-# Case: Blue Room（keshi「猫のいる生活」Seedance → Three.js）
+# Case: Blue Room (keshi "Life with a Cat", Seedance → Three.js)
 
-参考：https://x.com/keshiAIart/status/2091859315531681963 ·  成果：https://kami-no-michi.vercel.app/room.html
+Reference: https://x.com/keshiAIart/status/2091859315531681963 · Result: https://kami-no-michi.vercel.app/room.html
 
-## 时间线（每一步的错误与修法）
-1. 第一版把窗户放在后墙，床沿右墙——用户："房间错了！窗在墙中间"。→ 教训：先做多帧空间分析。
-2. 用户在截图上画红线标出墙角透视 → 改为"斜看墙角"坐标系，相机由物件横坐标反解。
-3. 床：用户逐条纠正"床头靠墙、床身垂直、紧挨门、床头柜、地上书堆、画在床正上方 2×2"。→ 布局契约必须逐件写。
-4. 光：用户要"光从窗进、屋顶不透光、只落地面、夕阳暖黄"。踩坑两次：封顶板伸到窗外挡光；toon 梯度底不为 0 像顶光。用 `?diag=sun` 定位。
-5. 被子：贴图正方形→RoundedBox 豆腐块→带噪声鼓包→**搭在床垫上的高细分布**（山丘+卷边+垂落）。用户："自己截图看看"——每步都要截图。
-6. 人物：丝状发绺/马尾被判"像鬼"→ Lathe 头盔；脸被发帽盖住→ 发帽只到眉线；发髻问题其实是 Sphere φ 起点误解；躺姿歪→ 欧拉序 YZX；趴姿狗腿→ 小腿正值；侧躺面向镜头。
-7. 截图工具：ego-browser 会抓到用户标签页→ headless Chrome；swiftshader 3 分钟→ GPU 路径几秒。
-8. 部署事故：在临时目录跑了 `vercel --prod` 创建了垃圾项目→ 立即删除；部署只在项目根目录。
+## Timeline (every mistake and its fix)
+1. First version put the window on the back wall and the bed along the right wall. User: "the room is wrong, the window is mid-wall". → Lesson: multi-frame spatial analysis first.
+2. The user drew the corner perspective in red on a screenshot → switched to a "looking into the corner" frame; camera solved from landmark fractions.
+3. Bed: the user corrected item by item — head against the wall, body perpendicular, right beside the door, nightstand, book stack on the floor, posters 2×2 directly above. → The layout contract must be written per object.
+4. Light: the user wanted "sun through the window, roof opaque, floor only, warm sunset". Two traps: the roof slab extended outside the window and blocked the sun; the toon ramp floor was not 0 and lit back-facing walls. Located with `?diag=sun`.
+5. Duvet: textured square → RoundedBox tofu → noisy puff → **a high-resolution sheet draped over the mattress** (hills + edge roll + hang). User: "take a screenshot yourself" — screenshot every step.
+6. Characters: ribbon locks / ponytail judged "ghost-like" → lathe helmet; the face hidden by the hair cap → cap ends at the brow; the "buns" were a SphereGeometry φ-origin misunderstanding; lying poses skewed → Euler order YZX; prone legs like a dog → positive calf values; side-lying facing the camera.
+7. Screenshot tooling: a shared browser captured the user's tab → headless Chrome; swiftshader took 3 minutes → GPU path takes seconds.
+8. Deploy accident: `vercel --prod` run in a scratch directory created a junk project → deleted immediately; deploy only from the project root.
 
-## 最终状态（自评）
-空间/相机 9 · 光 8 · 床品 7.5 · 书桌区 8 · 猫 8 · 人物 7–8 · 动作 7 · 小物 7
+## Final state (self-assessed)
+Space/camera 9 · Light 8 · Bedding 7.5 · Desk area 8 · Cat 8 · Characters 7–8 · Motion 7 · Small props 7

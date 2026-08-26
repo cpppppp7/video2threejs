@@ -1,18 +1,18 @@
-# 用户信号（永久生效）
+# User signals (permanent)
 
-## 目标
-- 1:1，不接受"神似"；每个物件、每种颜色、动作与地点都要对上。
-- 要看到过程：实时预览；机位允许用户自己调并发回。
+## Goal
+- 1:1; "looks similar" is not accepted; every object, colour, motion and place must match.
+- The user wants to watch the build: live preview; the user may adjust the camera and send it back.
 
-## 明确"不要"
-- 空气里漂浮的白色粒子
-- 手画的光斑 / 悬空体积光片
-- 屋顶漏光、墙上有光（光只从窗户进来、只落地面）
-- 乐高方块感的床品；被子上的白条（要白边）
-- 丝状发绺、马尾（"像鬼"）、褶皱方块裙
-- 地毯凸起白边
-- 狗腿式动作、穿模上床
-- 书架实心块把书藏起来、书发光
+## Explicit "no"
+- White particles floating in the air
+- Painted light patches / floating volumetric light planes
+- Light leaking through the roof, light on the walls (light enters only through the window and lands on the floor)
+- Lego-looking bedding; a white strip on top of the duvet (a white edge is wanted instead)
+- Stringy hair locks, ponytails ("ghost-like"), boxy pleat skirts
+- A raised white border on the rug
+- Dog-like leg poses, clipping into the bed
+- Solid bookcase blocks hiding the books; glowing books
 
-## 明确"要"
-- 夕阳暖黄亮光；被子像连绵小山丘；枕头斜靠床头；四幅画在床正上方；窗无横棂；书架在窗左半下、半窗高；床紧挨门、床头靠墙。
+## Explicit "yes"
+- Bright warm sunset light; a duvet like rolling hills; pillows leaning on the headboard; four posters directly above the bed; a window without a horizontal bar; the bookcase under the window's left pane at half height; the bed right beside the door with its head against the wall.

@@ -1,14 +1,14 @@
-# 自我 review 表（交付前）
+# Self-review table (before handoff)
 
-| # | 项目 | 现状 | 差距 / 下一步 | 分 |
+| # | Item | State | Gap / next step | Score |
 |---|---|---|---|---|
-| 1 | 空间/相机 | | | |
-| 2 | 光 | | | |
-| 3 | 床品 | | | |
-| 4 | 书桌区 | | | |
-| 5 | 人物外形 | | | |
-| 6 | 动作 | | | |
-| 7 | 小物/杂物 | | | |
-| 8 | 色板 | | | |
+| 1 | Space / camera | | | |
+| 2 | Light | | | |
+| 3 | Bedding | | | |
+| 4 | Desk area | | | |
+| 5 | Character look | | | |
+| 6 | Motion | | | |
+| 7 | Small props | | | |
+| 8 | Palette | | | |
 
-规则：按影响排序，给用户选下一批；"改进"≠"完成"，不夸大。
+Rules: order by impact; let the user choose the next batch; "improved" is not "done" — never overstate.
