@@ -1,7 +1,7 @@
 # Frame extraction and sampling
 
 ## Getting the video
-- Tweets: read `extended_entities.media[].video_info.variants` from an X data API and download the 720p mp4 (not the m3u8).
+- Tweets: `curl https://api.fxtwitter.com/status/<tweet_id>` returns `tweet.media.videos[].variants` for free (fallback: `https://cdn.syndication.twimg.com/tweet-result?id=<id>&token=a`); pick the 720p/1080p mp4, not the m3u8. Paid X data APIs are only needed for search/timelines.
 - Record author, caption (it often names the generator / style reference) and duration.
 
 ## Frames (`forge/extract_frames.sh <video> [n]`)

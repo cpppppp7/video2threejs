@@ -16,3 +16,6 @@
 
 ## When it passes
 Per object: close-up matches the reference-feature list at ≥8/10; overall: side-by-side layout / colour / light agree; motion: every scene reads as human.
+
+## When an object "vanishes"
+Do not guess. In order: (1) `Box3.setFromObject` — is the geometry where you think? (2) force all its materials to a flat red `MeshBasicMaterial` and `frustumCulled=false` — still gone? (3) log `object.parent` and `scene.children.includes(object)` — a group that was never added, or was re-parented, renders nothing while its bounding box looks fine. (4) a downward `Raycaster` at its position lists what is actually there. Real case: a search-and-replace turned `car.rotation.y = 1.22; scene.add(car);` into `car.rotation.y = 1.22; // note scene.add(car);` — the comment swallowed the add. Never append `//` comments onto a line you are replacing by string; put them on their own line.
