@@ -19,4 +19,8 @@ Per object: write the reference-feature list first, then compare a `?view=` clos
 | Plush toy | spheres (body / head / ears / arms) + a colour-patch face |
 | Cat | RoundedBox trunk, white blaze / bib / gloves, pink inner ears, green slit-pupil eyes, whiskers, three-joint tail; a `sit` parameter blends sit/stand |
 
+For bodies, limbs, cloth and anything swept along a curve, read
+`build/solid_geometry.md` first — winding, caps and seams decide whether the
+object reads as solid at all, and they fail in ways that look like material bugs.
+
 Principle: mass first, then proportions, then accessories. Any "texture instead of geometry" shortcut (a textured square for a duvet) gets spotted immediately.

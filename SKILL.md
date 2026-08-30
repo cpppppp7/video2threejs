@@ -36,12 +36,14 @@ Start the dev server and `open` the page for the user **before** modelling anyth
 
 ### 2. Analyse the video first, from several angles
 Extract at least 8 frames across the whole clip. For spatial facts (which wall, which corner, what sits on what) read a gridded frame cell by cell; confirm every fact in a second frame; if the perspective still will not resolve, ask the user to draw the corner and floor lines on a screenshot. Produce the spatial fact sheet, the object inventory, the palette, the character cards and the motion scene table **before** writing code.
+Decide explicitly, per shot, **what moves — the subject or the camera**. Getting this backwards is expensive: a shot animated as a slow push turned out to be a static camera watching an arm rise, and the arm had no rig.
 *Why:* three confident rebuilds put the window in the wrong place; one red-pen sketch fixed it.
 → `grimoire/intake/multi_view_analysis.md`, `grimoire/intake/frame_extraction.md`
 
 ### 3. Space before objects; solve the camera
 Decide the visible walls and the corner, set the coordinate frame (left wall `x = LW`, right wall `z = RW`), then **solve** the camera from landmark fractions with `forge/solve_camera.py`. Only then place furniture.
-*Why:* a camera placed by feel makes every later comparison lie.
+Solve from measurements — landmark screen position **and** apparent size — with `forge/solve_camera.mjs`, and constrain the elevation so the solver cannot pick the wrong branch. Before chasing a framing, check it is possible at all: two shots of a composite reference often cannot coexist at one scale (triangle-inequality test in the grimoire). Say so, take the closest coherent framing, and move on.
+*Why:* a camera placed by feel makes every later comparison lie; an impossible one makes it lie forever.
 → `grimoire/space/perspective_solving.md`
 
 ### 4. Keep a written layout contract
@@ -60,23 +62,32 @@ Solid walls with a real window opening; a roof that covers exactly the room inte
 Before building an object, list its reference features (shape, position, colour, accessories). After building, screenshot it from a close-up camera and score it. Do not move on below 8. Geometry over texture: a duvet is a draped sheet, a bookcase is open with real books, a pillow is thick and leans.
 → `grimoire/build/procedural_recipes.md`
 
-### 8. Research when unsure
+### 8. Closed solids, correct winding, one surface where you can
+A hand-built swept tube has two possible triangle orders and only one faces outward; the wrong one makes `FrontSide` cull the outer shell so you see the object's **inside** — the figure looks transparent and "badly stitched", and you will blame the material. `LatheGeometry` is an open tube. Joint balls must be larger than the tube ends they cap. Prefer one continuous profile (neck **and** torso in a single sweep) to two primitives tucked together: "far enough inside that it cannot show" stops being true as soon as their cross-sections differ or a joint rotates. Diagnose with `?diag=flat` (opaque material — still see-through means geometry), `?diag=norm`, then `?off=<part>`.
+*Why:* several review rounds went into material tuning for a one-line index-order bug.
+→ `grimoire/build/solid_geometry.md`
+
+### 9. Shaders fail silently — wire up the error hook first
+`renderer.debug.onShaderError` onto the page, before writing any custom material. A `ShaderMaterial` that fails to compile renders nothing and logs only to the console. Then know the quiet ones: `modelMatrix` exists only in the vertex stage; `pow(negative, 2.0)` and `smoothstep(hi, lo, x)` are **undefined** in GLSL and yield NaN; an integer hash that overflows to double before its bit ops is biased and flattens every texture in the scene; a fresnel cannot make an atmosphere when the camera skims the limb.
+→ `grimoire/build/shader_traps.md`
+
+### 10. Research when unsure
 If a construction is unknown (cloth, hair, a lamp arc), search three.js examples, the forum and sibling skills, list up to three approaches, pick the most controllable, cite the source, and record the finding in `grimoire/research/when_unsure.md`. Verify maths with node (Euler order, geometry φ origins) rather than reasoning about it.
 → `grimoire/research/when_unsure.md`
 
-### 9. Motion must look human
-Root Euler order `YZX`; thigh negative = forward, calf positive = folds back; on the back `rx=-π/2`, prone adds `rz=π`, side adds `rz=±π/2`. Waypoints (`via`) route characters around furniture. Sitting and lying heights are measured from the duvet top. Log joints and bounding boxes for any character that "vanishes". Screenshot every scene.
+### 11. Motion must look human
+Root Euler order `YZX`; thigh negative = forward, calf positive = folds back; on the back `rx=-π/2`, prone adds `rz=π`, side adds `rz=±π/2`. A head's `rotation.x` is inverted from intuition — `Rx(+t)` looks **down**. Specify dramatic gestures as *palm here, facing that, fingers that way* and solve them with `forge/solve_ik_arm.mjs`, keying them **in sequence with a continuity term** so the poses stay on one branch and interpolate as a single movement. Waypoints (`via`) route characters around furniture. Sitting and lying heights are measured from the duvet top. Log joints and bounding boxes for any character that "vanishes". Screenshot every scene.
 → `grimoire/build/characters.md`, `grimoire/build/motion_timeline.md`
 
-### 10. Screenshot everything, then self-review
+### 12. Screenshot everything, then self-review
 Headless Chrome on the GPU path (seconds), viewport in the video's aspect ratio, `hstack` against the reference frame. Before handing off, write a scored self-review table with a gap list and let the user choose the next batch. "Improved" is not "done".
 → `grimoire/review/verification.md`, `grimoire/review/self_review.md`
 
-### 11. The user's "no" list is permanent
+### 13. The user's "no" list is permanent
 Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is never reintroduced (floating particles, painted light, Lego bedding, stringy hair, dog-like legs, light on walls …).
 → `grimoire/feedback/user_signals.md`
 
-### 12. Deploy from the project root
+### 14. Deploy from the project root
 `vercel --prod` (or any deploy) only from the project directory. Write the project `CLAUDE.md` with the coordinate frame, camera, palette, light, object facts, debug parameters and the user's lists.
 → `grimoire/review/handoff.md`
 
@@ -89,7 +100,7 @@ Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is
 | 2 | Space: walls → frame → camera solve → layout contract | `landmarks.json`, `CAM/LOOK/fov`, contract | `space/*` |
 | 3 | Scaffold with live preview; staged skeleton from the template | running page the user watches | `build/live_preview.md` |
 | 4 | Light | window hole, roof, ramp, sun; `?diag=sun` clean | `build/lighting.md` |
-| 5 | Objects one by one | per-object close-ups ≥8/10 | `build/procedural_recipes.md` |
+| 5 | Objects one by one | per-object close-ups ≥8/10 | `build/procedural_recipes.md`, `build/solid_geometry.md`, `build/shader_traps.md` |
 | 6 | Characters, then the motion timeline | per-scene screenshots | `build/characters.md`, `build/motion_timeline.md` |
 | 7 | Camera UX: orbit, copy/persist, intro | `C`/`R`, intro shots verified | `build/camera_ux.md` |
 | 8 | Verify and self-review; loop with the user | side-by-sides, scored table | `review/*` |
@@ -115,10 +126,15 @@ Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is
 - Guessing Euler behaviour; XYZ order for lying poses.
 - Screenshots through a shared browser; software-rasterised headless renders.
 - Running the deploy command from a scratch directory.
+- Blaming a material for see-through geometry (check winding and caps first).
+- Trusting a hand-rolled hash without printing its min/mean/max.
+- Adding close-up-grade procedural detail that destroys the same surface's large shapes at normal distance.
+- Re-solving a framing the reference got by compositing.
+- Hundreds of unlit billboards at high opacity — they saturate to one white blob.
 
 ## Debug parameters the template provides
 
-`?t=<s>` jump the timeline · `?view=g1|g2|cat|desk|bed|rug` preset close-ups · `?view=free&cam=x,y,z&look=x,y,z` any camera · `?diag=sun` direct sun only · `?diag=pose` joint + bounding-box log · `?intro=1&it=<s>` force / seek the intro. The page clock runs ≈2.5 s ahead of `?t` in headless renders.
+`?t=<s>` jump the timeline · `?shot=N&u=0..1` freeze one shot at a fraction of its length · `?view=g1|g2|cat|desk|bed|rug` preset close-ups · `?view=free&cam=x,y,z&look=x,y,z&fov=` any camera · `?diag=sun` direct sun only · `?diag=flat` opaque material · `?diag=norm` normals · `?diag=pose` joint + bounding-box log · `?off=<part>,<part>` hide named meshes · `?pose=…` / `?key=<name>` dial a rig · `?intro=1&it=<s>` force / seek the intro. The page clock runs ≈2.5 s ahead of `?t` in headless renders.
 
 ## Install
 
