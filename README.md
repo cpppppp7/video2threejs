@@ -53,7 +53,7 @@ video ──► frames (8+) ──► multi-angle analysis ──► layout cont
        screenshot ─► side-by-side with the frame ─► self-review table ─► next batch
 ```
 
-## Twelve principles (each one was learned the hard way)
+## Fifteen principles (each one was learned the hard way)
 
 1. **Live preview while sculpting.** The dev server starts before the first mesh. The scene is written in stages that hot-reload, and the user watches it grow. Feedback arrives at the moment it is cheapest.
 2. **Analyse the video from several angles before building.** Eight or more frames across the whole clip; gridded frames for spatial facts; a different frame whenever one is ambiguous. If the walls still will not resolve, ask the user to draw the perspective lines — it took one red-pen sketch to fix a layout that three "smart" rebuilds had gotten wrong.
@@ -62,11 +62,14 @@ video ──► frames (8+) ──► multi-angle analysis ──► layout cont
 5. **Colours come from pixels.** Sample lit and shaded patches on gridded frames; never type a colour from memory.
 6. **Real light, not painted light.** Solid walls with a real window opening, a roof that covers exactly the room, a toon ramp whose bottom step is zero, a warm low sun. Debug with a direct-sun-only render, never by guessing. (Two of the three worst regressions in the case study were "light" bugs that were really a roof slab and a toon ramp.)
 7. **Sculpt object by object to 8/10.** Each object gets a reference-feature list and a close-up camera. Tofu blocks, Lego bedding, textured squares standing in for geometry: fail.
-8. **Closed solids, correct winding, one surface where you can.** A hand-built swept tube has two possible triangle orders and only one faces outward; the wrong one makes `FrontSide` cull the outer shell, so you see the object's inside and the figure looks transparent — for several review rounds you will blame the material. `LatheGeometry` is an open tube. Joint balls must be larger than the tube ends they cap. Prefer one continuous profile to two primitives tucked together.
-9. **Shaders fail silently — wire up `renderer.debug.onShaderError` first.** A `ShaderMaterial` that will not compile renders nothing and logs only to the console. Then know the quiet ones: `modelMatrix` is vertex-stage only; `pow(negative, 2.0)` and `smoothstep(hi, lo, x)` are undefined GLSL; an integer hash that overflows to double before its bit ops is biased and flattens every texture in the scene.
-10. **Research when unsure.** Official examples, the forum, sibling skills — then write the finding down in `grimoire/research/`. Verify maths with node instead of reasoning about it (Euler orders, geometry φ origins).
-11. **Motion must look human.** One Euler convention (`YZX`), one joint convention, waypoints around furniture, a bounding-box log for characters that "vanish", a screenshot per scene. Limbs that *act* get a real joint chain, and dramatic poses get solved from *palm here, facing that* rather than dialled in angle by angle.
-12. **Screenshot everything, then self-review.** Headless Chrome on the GPU path renders in seconds; `hstack` against the frame; finish with a scored table of gaps and let the user pick the next batch. Never claim "done" for "improved".
+8. **One mesh, sculpted — never assembled.** An organic form (head, ear, torso, limb, hand, robe) is one closed surface shaped by moving its own vertices: bulge it out, sink it in, extrude a limb from one of its faces, displace it with a smooth field. Primitives tucked together give you a moving seam, an outline ring, a part that detaches when a joint rotates, and a shading break no material can fix. Genuinely separate objects stay separate; small rigid solids that sit *on* the skin (hair curls, rivets) are instanced jewellery. Two substrates: a displacement field on a subdivided primitive, or a box-modelling cage + Catmull-Clark then displacement.
+9. **Reason first, then sculpt step by step — and finish each step.** Write the form down before touching geometry (base volume, what is raised, what is sunk, in what order), split it into steps that each leave a checkable surface, and get each one accepted before starting the next. *Blank face → recess → eyes → mouth → nose* was accepted; the same head sculpted blob-by-blob was thrown away twice.
+10. **Verify the surface with numbers.** Dump a profile — a face's centre line, a lane across a palm — and check it is monotonic where it should be; a plateau between two rises reads as a dent and a specular highlight hides both. After any cage operation, count the edges used by ≠ 2 faces: non-zero is a T-junction, and subdivision draws it as a crease.
+11. **Closed solids, correct winding, one surface where you can.** A hand-built swept tube has two possible triangle orders and only one faces outward; the wrong one makes `FrontSide` cull the outer shell, so you see the object's inside and the figure looks transparent — for several review rounds you will blame the material. `LatheGeometry` is an open tube. Joint balls must be larger than the tube ends they cap. Prefer one continuous profile to two primitives tucked together.
+12. **Shaders fail silently — wire up `renderer.debug.onShaderError` first.** A `ShaderMaterial` that will not compile renders nothing and logs only to the console. Then know the quiet ones: `modelMatrix` is vertex-stage only; `pow(negative, 2.0)` and `smoothstep(hi, lo, x)` are undefined GLSL; an integer hash that overflows to double before its bit ops is biased and flattens every texture in the scene.
+13. **Research when unsure.** Official examples, the forum, sibling skills — then write the finding down in `grimoire/research/`. Verify maths with node instead of reasoning about it (Euler orders, geometry φ origins).
+14. **Motion must look human.** One Euler convention (`YZX`), one joint convention, waypoints around furniture, a bounding-box log for characters that "vanish", a screenshot per scene. Limbs that *act* get a real joint chain, rigid-segment skin weights with about one limb diameter of blend, and **derived** joint axes — a wrist's flexion axis is `forearm × palmNormal`, and building it on the elbow's axis makes the key do nothing at all. Dramatic poses are solved from *palm here, facing that*, and effects the character causes are keyed to the clip's clock so every camera sees the same event.
+15. **Screenshot everything, then self-review.** Headless Chrome on the GPU path renders in seconds; `hstack` against the frame; finish with a scored table of gaps and let the user pick the next batch. Never claim "done" for "improved".
 
 ## What is in the repository
 
@@ -76,7 +79,7 @@ video2threejs/
 ├── grimoire/                stage contracts, read when you reach the stage
 │   ├── intake/              frame_extraction · multi_view_analysis
 │   ├── space/               perspective_solving · layout_contract
-│   ├── build/               live_preview · lighting · procedural_recipes · characters · motion_timeline · camera_ux
+│   ├── build/               live_preview · lighting · one_mesh_sculpting · box_modelling · procedural_recipes · solid_geometry · shader_traps · characters · skinning_rig · motion_timeline · volumetrics · camera_ux
 │   ├── review/              verification · self_review · handoff
 │   ├── research/            when_unsure (+ recorded findings)
 │   └── feedback/            user_signals (what the user said yes / no to — permanent)
@@ -92,7 +95,7 @@ video2threejs/
 ├── templates/
 │   ├── room.template.js     the Blue Room reference implementation (≈900 lines, everything below lives in it)
 │   └── lib.js               toon ramp, value noise, radial textures
-└── examples/               blue-room · golden-hour · palm-of-the-buddha — case studies with every mistake and its fix
+└── examples/               blue-room · golden-hour · palm-of-the-buddha · kami-buddha-sculpt — case studies with every mistake and its fix
 ```
 
 ### The reference implementation, feature by feature

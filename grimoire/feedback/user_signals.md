@@ -25,3 +25,21 @@
 - The subject faces what it is acting on; do not leave it side-on.
 - When the brief is "one earth, one figure, camera angles" — build exactly that.
   No per-shot repositioning of the world to fake a framing.
+
+## Kami / sculpted Buddha
+- **Never assemble an organic form from primitives.** "I want it made from one
+  mesh, by bulging and pushing" — said once, then enforced every time a seam
+  appeared. Separate meshes for an ear, a hand or a body are rejected on sight.
+- Do not modify anything the current task did not ask about. A hand fix that
+  squared the torso and flattened a sleeve was the angriest moment of the build.
+- When a fix regresses a neighbour, restore the neighbour's **numbers**, not an
+  approximation of them.
+- Identify the exact feature the user circled before changing anything. "Raise
+  the bottom of the V" means move that vertex row; filling the V with a web is a
+  different change and will be called out.
+- No pink glow on the hand; amber-white. No painted nebula billboard. Bronze
+  stays the workshop's material and lights — do not "improve" it brighter.
+- The explosion is a fiery volume with light through it and real thickness, not
+  a few glowing shells and not a solid modelled cap.
+- Controls: responsive, not heavily damped; zoom must be snappy; the orbit pivot
+  is the character being driven.

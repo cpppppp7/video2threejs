@@ -62,32 +62,91 @@ Solid walls with a real window opening; a roof that covers exactly the room inte
 Before building an object, list its reference features (shape, position, colour, accessories). After building, screenshot it from a close-up camera and score it. Do not move on below 8. Geometry over texture: a duvet is a draped sheet, a bookcase is open with real books, a pillow is thick and leans.
 → `grimoire/build/procedural_recipes.md`
 
-### 8. Closed solids, correct winding, one surface where you can
+### 8. One mesh, sculpted — never assembled
+
+An organic form (a head, an ear, a torso, a limb, a hand, a robe) is **one closed
+surface shaped by moving its own vertices**: bulge it out, sink it in, extrude a
+limb from one of its faces, displace it with a smooth field. Do not build it from
+a sphere plus a cone plus a capsule tucked together. Assembled organics produce,
+every single time: a bright seam that moves with the light, an outline ring
+around the buried part, a piece that detaches when a joint rotates, z-fighting
+shimmer, a "transparent" look from one wrongly wound sub-mesh, and a shading
+break no material tuning can remove.
+
+**When it applies:** anything that shares skin in the reference must share a mesh
+in the build — a nose *is* the face pushed forward, an ear *is* the skull raised.
+Genuinely separate objects (a lamp, a book, a pole, a window frame) stay separate
+primitives; small rigid solids that sit *on* a surface and never deform (hair
+curls, rivets, blossoms) are instanced jewellery on the sculpted skin; long thin
+runs are one swept tube, not a chain of capsules.
+
+**Two substrates:** a displacement field on a dense subdivided primitive (heads,
+near-spherical forms), or a box-modelling cage + Catmull-Clark, then displacement
+for the detail (bodies, limbs, hands, clothing). Both leave one skin, which is
+what the rig binds to.
+
+*Why:* every assembled organic in this project's history was rebuilt as one mesh
+in the end, after the seams had eaten a review round each.
+→ `grimoire/build/one_mesh_sculpting.md`, `grimoire/build/box_modelling.md`
+
+### 9. Reason first, then sculpt step by step, each step finished
+
+Before touching geometry, write the form down: the base volume, which features
+are raised, which are sunk, which are a change of slope, and in what order they
+must be applied — each step is built on the surface the previous one left. Then
+split the work into steps that each leave a **valid, checkable** surface (blank
+base → large planes → primary features → secondary → fine detail), and **finish
+each step before starting the next**: screenshot it, dump its numeric profile,
+show it, get it accepted. A wobble left in step 2 is unfixable by step 5 because
+five fields now sit on top of it. Never a step whose result can only be judged
+after a later step lands.
+
+*Why:* the head that was sculpted blob-by-blob was thrown away twice; the same
+head sculpted as *blank face → recess → eyes → mouth → nose*, one sign-off per
+arrow, was accepted.
+→ `grimoire/build/one_mesh_sculpting.md`
+
+### 10. Verify the surface with numbers, not with your eyes
+
+Dump a profile across the surface — the centre line of a face, a lane across a
+palm, a ring around a joint — and check it is monotonic where it should be.
+A plateau between two rises reads to the eye as a dent, and a specular highlight
+hides both. After any cage operation, also count the edges used by ≠ 2 faces:
+non-zero means a T-junction, and subdivision will render it as a hard crease.
+→ `grimoire/build/box_modelling.md`, `grimoire/build/one_mesh_sculpting.md`
+
+### 11. Closed solids, correct winding, one surface where you can
 A hand-built swept tube has two possible triangle orders and only one faces outward; the wrong one makes `FrontSide` cull the outer shell so you see the object's **inside** — the figure looks transparent and "badly stitched", and you will blame the material. `LatheGeometry` is an open tube. Joint balls must be larger than the tube ends they cap. Prefer one continuous profile (neck **and** torso in a single sweep) to two primitives tucked together: "far enough inside that it cannot show" stops being true as soon as their cross-sections differ or a joint rotates. Diagnose with `?diag=flat` (opaque material — still see-through means geometry), `?diag=norm`, then `?off=<part>`.
 *Why:* several review rounds went into material tuning for a one-line index-order bug.
 → `grimoire/build/solid_geometry.md`
 
-### 9. Shaders fail silently — wire up the error hook first
+### 12. Shaders fail silently — wire up the error hook first
 `renderer.debug.onShaderError` onto the page, before writing any custom material. A `ShaderMaterial` that fails to compile renders nothing and logs only to the console. Then know the quiet ones: `modelMatrix` exists only in the vertex stage; `pow(negative, 2.0)` and `smoothstep(hi, lo, x)` are **undefined** in GLSL and yield NaN; an integer hash that overflows to double before its bit ops is biased and flattens every texture in the scene; a fresnel cannot make an atmosphere when the camera skims the limb.
 → `grimoire/build/shader_traps.md`
 
-### 10. Research when unsure
+### 13. Research when unsure
 If a construction is unknown (cloth, hair, a lamp arc), search three.js examples, the forum and sibling skills, list up to three approaches, pick the most controllable, cite the source, and record the finding in `grimoire/research/when_unsure.md`. Verify maths with node (Euler order, geometry φ origins) rather than reasoning about it.
 → `grimoire/research/when_unsure.md`
 
-### 11. Motion must look human
+### 14. Motion must look human
 Root Euler order `YZX`; thigh negative = forward, calf positive = folds back; on the back `rx=-π/2`, prone adds `rz=π`, side adds `rz=±π/2`. A head's `rotation.x` is inverted from intuition — `Rx(+t)` looks **down**. Specify dramatic gestures as *palm here, facing that, fingers that way* and solve them with `forge/solve_ik_arm.mjs`, keying them **in sequence with a continuity term** so the poses stay on one branch and interpolate as a single movement. Waypoints (`via`) route characters around furniture. Sitting and lying heights are measured from the duvet top. Log joints and bounding boxes for any character that "vanishes". Screenshot every scene.
-→ `grimoire/build/characters.md`, `grimoire/build/motion_timeline.md`
+Bind the skin with **rigid segments and a short hinge** (one limb diameter of
+blend, a half-rotation bone at the joint, cage loops fanned *on* the joint), and
+**derive every joint axis** instead of assuming it — a wrist's flexion axis is
+`forearm × palmNormal`, and building it on the elbow's hinge axis makes the key
+do literally nothing. Effects the character causes belong to the clip's clock,
+not to a shot's.
+→ `grimoire/build/characters.md`, `grimoire/build/motion_timeline.md`, `grimoire/build/skinning_rig.md`
 
-### 12. Screenshot everything, then self-review
+### 15. Screenshot everything, then self-review
 Headless Chrome on the GPU path (seconds), viewport in the video's aspect ratio, `hstack` against the reference frame. Before handing off, write a scored self-review table with a gap list and let the user choose the next batch. "Improved" is not "done".
 → `grimoire/review/verification.md`, `grimoire/review/self_review.md`
 
-### 13. The user's "no" list is permanent
+### 16. The user's "no" list is permanent
 Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is never reintroduced (floating particles, painted light, Lego bedding, stringy hair, dog-like legs, light on walls …).
 → `grimoire/feedback/user_signals.md`
 
-### 14. Deploy from the project root
+### 17. Deploy from the project root
 `vercel --prod` (or any deploy) only from the project directory. Write the project `CLAUDE.md` with the coordinate frame, camera, palette, light, object facts, debug parameters and the user's lists.
 → `grimoire/review/handoff.md`
 
@@ -100,8 +159,9 @@ Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is
 | 2 | Space: walls → frame → camera solve → layout contract | `landmarks.json`, `CAM/LOOK/fov`, contract | `space/*` |
 | 3 | Scaffold with live preview; staged skeleton from the template | running page the user watches | `build/live_preview.md` |
 | 4 | Light | window hole, roof, ramp, sun; `?diag=sun` clean | `build/lighting.md` |
-| 5 | Objects one by one | per-object close-ups ≥8/10 | `build/procedural_recipes.md`, `build/solid_geometry.md`, `build/shader_traps.md` |
-| 6 | Characters, then the motion timeline | per-scene screenshots | `build/characters.md`, `build/motion_timeline.md` |
+| 5 | Objects one by one; organic forms as one sculpted mesh, step by step | per-object close-ups ≥8/10, profile dumps | `build/one_mesh_sculpting.md`, `build/box_modelling.md`, `build/procedural_recipes.md`, `build/solid_geometry.md`, `build/shader_traps.md` |
+| 6 | Characters: sculpt → rig → weights → gesture keys → motion timeline | per-scene screenshots, weight map, IK log | `build/characters.md`, `build/skinning_rig.md`, `build/motion_timeline.md` |
+| 6b | Volumetric effects (fire, storm, blast), keyed to the clip | orbit + in-shot screenshots | `build/volumetrics.md` |
 | 7 | Camera UX: orbit, copy/persist, intro | `C`/`R`, intro shots verified | `build/camera_ux.md` |
 | 8 | Verify and self-review; loop with the user | side-by-sides, scored table | `review/*` |
 | 9 | Deploy and hand off | URL, project CLAUDE.md | `review/handoff.md` |
@@ -131,10 +191,30 @@ Everything the user rejects goes into `grimoire/feedback/user_signals.md` and is
 - Adding close-up-grade procedural detail that destroys the same surface's large shapes at normal distance.
 - Re-solving a framing the reference got by compositing.
 - Hundreds of unlit billboards at high opacity — they saturate to one white blob.
+- Assembling a head, ear, hand or body from separate primitives and hoping the
+  seam hides; "far enough inside that it cannot show" is never true for long.
+- Sculpting a form blob by blob with no written step order, or moving to the next
+  step while the current one still wobbles.
+- Judging a surface by eye under a specular highlight instead of dumping its
+  profile; two gaussians handing over on a centre line (the plateau reads as a
+  dent).
+- A field keyed to one part applied with a hard distance cut — it writes a
+  jagged seam onto the neighbour.
+- An edge loop walked in one direction only (T-junction → hard crease after
+  subdivision); a loop allowed to run out of its region and square off the body.
+- Recording a landmark from a face index after later extrusions have reused it.
+- Capsule-distance skin weights on a limb (rubber hose), or a near-rigid cut
+  (notch and facet in the crook).
+- Assuming a joint's rotation axis instead of deriving and probing it.
+- One near plane for a whole film (long-lens shots z-fight and flicker).
+- An effect written into one shot's `tick`, so the other angles show nothing.
+- A modelled solid cap for an explosion; a handful of glowing shells with
+  same-phase noise (concentric arcs).
+- Heavy orbit damping and a slow zoom for a user who is recording by hand.
 
 ## Debug parameters the template provides
 
-`?t=<s>` jump the timeline · `?shot=N&u=0..1` freeze one shot at a fraction of its length · `?view=g1|g2|cat|desk|bed|rug` preset close-ups · `?view=free&cam=x,y,z&look=x,y,z&fov=` any camera · `?diag=sun` direct sun only · `?diag=flat` opaque material · `?diag=norm` normals · `?diag=pose` joint + bounding-box log · `?off=<part>,<part>` hide named meshes · `?pose=…` / `?key=<name>` dial a rig · `?intro=1&it=<s>` force / seek the intro. The page clock runs ≈2.5 s ahead of `?t` in headless renders.
+`?blank=1` base surface, every displacement field off · `?diag=zebra` striped environment (seams and slope breaks) · `?diag=clay` flat grey · `?diag=prof` numeric surface profile · `?diag=weights` skin weights as vertex colours · `?sub=<n>` subdivision level · `?t=<s>` jump the timeline · `?shot=N&u=0..1` freeze one shot at a fraction of its length · `?view=g1|g2|cat|desk|bed|rug` preset close-ups · `?view=free&cam=x,y,z&look=x,y,z&fov=` any camera · `?diag=sun` direct sun only · `?diag=flat` opaque material · `?diag=norm` normals · `?diag=pose` joint + bounding-box log · `?off=<part>,<part>` hide named meshes · `?pose=…` / `?key=<name>` dial a rig · `?intro=1&it=<s>` force / seek the intro. The page clock runs ≈2.5 s ahead of `?t` in headless renders.
 
 ## Install
 
